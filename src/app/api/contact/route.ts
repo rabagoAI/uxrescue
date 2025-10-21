@@ -11,10 +11,10 @@ export async function POST(request: Request) {
     // Extraer variables del body
     const { name, email, company, website, message } = body
 
-    // Validaciones (CORREGIDO - faltaban variables)
+    // Validaciones
     if (!name || !email || !message) {
       return NextResponse.json(
-        { error: 'Nombre, email y mensaje son requeridos' }, // ❌ faltaba comilla
+        { error: 'Nombre, email y mensaje son requeridos' },
         { status: 400 }
       )
     }
@@ -45,10 +45,11 @@ export async function POST(request: Request) {
       id: result.insertedId 
     })
 
-  } catch (error: any) { // ❌ faltaba tipar el error
+  } catch (error: unknown) {
     console.error('❌ Error MongoDB:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: 'Error interno del servidor: ' + error.message },
+      { error: 'Error interno del servidor: ' + errorMessage },
       { status: 500 }
     )
   }
