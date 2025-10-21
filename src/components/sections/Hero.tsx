@@ -4,6 +4,22 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Star, Zap, Shield } from 'lucide-react'
 
 export default function Hero() {
+  // Función para scroll suave a una sección
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
+  // Función para el botón de auditoría
+  const handleAuditRequest = () => {
+    scrollToSection('contacto')
+  }
+
   return (
     <section className="min-h-screen bg-gradient-to-br from-dark via-dark to-primary/20 flex items-center justify-center px-4 relative overflow-hidden">
       {/* Elementos de fondo */}
@@ -70,19 +86,25 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Botones de acción */}
+        {/* Botones de acción - AHORA CON FUNCIONALIDAD */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
-          <button className="group bg-secondary hover:bg-secondary/90 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105">
+          <button 
+            onClick={handleAuditRequest}
+            className="group bg-secondary hover:bg-secondary/90 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+          >
             Solicitar Auditoría Gratuita
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
           
-          <button className="group border-2 border-white/30 hover:border-white/60 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 backdrop-blur-sm hover:scale-105">
+          <button 
+            onClick={() => scrollToSection('proceso')}
+            className="group border-2 border-white/30 hover:border-white/60 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 backdrop-blur-sm hover:scale-105"
+          >
             <span className="flex items-center gap-2">
               Ver Casos de Éxito
             </span>
