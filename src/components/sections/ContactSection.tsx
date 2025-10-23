@@ -79,13 +79,13 @@ export default function ContactSection() {
     {
       icon: Mail,
       title: 'Email',
-      value: 'hola@uxrescue.com',
+      value: 'pacoalfair@hotmail.com',
       description: 'Respuesta en menos de 24h'
     },
     {
       icon: Phone,
       title: 'Teléfono',
-      value: '+34 123 456 789',
+      value: '+34 659 680 602',
       description: 'Lunes a Viernes 9:00-18:00'
     },
     {

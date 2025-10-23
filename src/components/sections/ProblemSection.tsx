@@ -27,7 +27,7 @@ function isBeforeSection(section: Section): section is BeforeSection {
 export default function ProblemSection() {
   const ref = useRef(null)
   const [isInView, setIsInView] = useState(false)
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -37,11 +37,11 @@ export default function ProblemSection() {
       },
       { threshold: 0.1 }
     )
-    
+
     if (ref.current) {
       observer.observe(ref.current)
     }
-    
+
     return () => {
       if (ref.current) {
         observer.unobserve(ref.current)
@@ -94,7 +94,7 @@ export default function ProblemSection() {
       problems: [
         'Diseño desactualizado',
         'No responsive',
-        'Velocidad lenta', 
+        'Velocidad lenta',
         'Navegación confusa',
         'Baja conversión'
       ],
@@ -120,7 +120,7 @@ export default function ProblemSection() {
       <div className="absolute inset-0 bg-dot-white/[0.02] bg-[size:40px_40px]" />
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
-      
+
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         {/* Encabezado */}
         <motion.div
@@ -156,7 +156,7 @@ export default function ProblemSection() {
                 </div>
                 <span className="text-2xl font-bold text-white">{problem.stat}</span>
               </div>
-              
+
               <h3 className="text-xl font-semibold text-white mb-3">{problem.title}</h3>
               <p className="text-gray-300 mb-4 text-sm leading-relaxed">{problem.description}</p>
               <div className="flex items-center gap-2 text-red-300 text-sm font-medium bg-white/5 rounded-lg px-3 py-2">
@@ -180,14 +180,14 @@ export default function ProblemSection() {
               Garantizada
             </span>
           </h3>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             {beforeAfter.map((section, index) => (
               <div key={section.label} className="text-center">
                 <h4 className={`text-2xl font-bold mb-6 ${section.color}`}>
                   {section.label}
                 </h4>
-                
+
                 <div className="space-y-3">
                   {isBeforeSection(section) ? (
                     section.problems.map((problem: string, i: number) => (
@@ -219,7 +219,18 @@ export default function ProblemSection() {
             <p className="text-gray-300 mb-6 text-lg">
               ¿Ves alguno de estos problemas en tu web actual?
             </p>
-            <button className="bg-gradient-to-r from-accent to-yellow-500 hover:from-yellow-400 hover:to-accent text-dark font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl text-lg">
+            <button
+              onClick={() => {
+                const contactSection = document.getElementById('contacto')
+                if (contactSection) {
+                  contactSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  })
+                }
+              }}
+              className="bg-gradient-to-r from-accent to-yellow-500 hover:from-yellow-400 hover:to-accent text-dark font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl text-lg cursor-pointer"
+            >
               🚀 Diagnosticar Mi Web Gratis
             </button>
             <p className="text-gray-400 text-sm mt-4">
