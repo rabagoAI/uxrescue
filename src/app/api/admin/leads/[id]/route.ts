@@ -4,10 +4,11 @@ import clientPromise from '@/lib/mongodb'
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('🔄 Actualizando lead:', params.id)
+    const { id } = await params
+    console.log('🔄 Actualizando lead:', id)
     
     const body = await request.json()
     const { status } = body
@@ -20,7 +21,7 @@ export async function PATCH(
     }
 
     // Validar que el ID es un ObjectId válido
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: 'ID de lead inválido' },
         { status: 400 }
@@ -31,7 +32,7 @@ export async function PATCH(
     const db = client.db('uxrescue')
     
     const result = await db.collection('leads').updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       { 
         $set: { 
           status,
@@ -65,13 +66,14 @@ export async function PATCH(
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('📥 Obteniendo lead:', params.id)
+    const { id } = await params
+    console.log('📥 Obteniendo lead:', id)
 
     // Validar que el ID es un ObjectId válido
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: 'ID de lead inválido' },
         { status: 400 }
@@ -82,7 +84,7 @@ export async function GET(
     const db = client.db('uxrescue')
     
     const lead = await db.collection('leads').findOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     })
 
     if (!lead) {
