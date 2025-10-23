@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function AdminLayout({
   children,
 }: {
@@ -10,12 +12,12 @@ export default function AdminLayout({
           <div className="flex justify-between items-center py-4">
             <h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
             <nav className="flex space-x-4">
-              <a href="/admin" className="text-gray-700 hover:text-gray-900 font-medium">
+              <Link href="/admin" className="text-gray-700 hover:text-gray-900 font-medium">
                 Leads
-              </a>
-              <a href="/" className="text-gray-500 hover:text-gray-700">
+              </Link>
+              <Link href="/" className="text-gray-500 hover:text-gray-700">
                 Volver al sitio
-              </a>
+              </Link>
             </nav>
           </div>
         </div>
