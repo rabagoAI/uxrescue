@@ -4,6 +4,106 @@ import { motion } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import { Search, Palette, Rocket, CheckCircle, ArrowRight, Clock, Users, Target } from 'lucide-react'
 
+// Componente de paso animado con Framer Motion
+function AnimatedProcessStep({ step, index, isInView }: { step: any, index: number, isInView: boolean }) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50, scale: 0.9 }}
+      animate={isInView ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: index % 2 === 0 ? -50 : 50, scale: 0.9 }}
+      transition={{ 
+        duration: 0.6,
+        delay: index * 0.2,
+        ease: "easeOut"
+      }}
+      whileHover={{ 
+        scale: 1.02,
+        y: -5,
+        transition: { duration: 0.3 }
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`flex flex-col md:flex-row items-center gap-8 ${
+        index % 2 === 0 ? 'md:flex-row-reverse' : ''
+      } relative group`}
+    >
+      {/* Contenido */}
+      <div className={`flex-1 ${index % 2 === 0 ? 'md:text-right' : ''} z-10`}>
+        <motion.div 
+          className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-4 group-hover:bg-white/20 transition-all duration-300"
+          whileHover={{ scale: 1.05 }}
+        >
+          <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${step.color}`} />
+          <span className="text-sm text-gray-300">Paso {step.number}</span>
+          <div className="flex items-center gap-1 text-xs text-gray-400">
+            <Clock className="w-3 h-3" />
+            {step.duration}
+          </div>
+        </motion.div>
+        
+        <motion.h3 
+          className="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center gap-3"
+          whileHover={{ y: -2 }}
+        >
+          <motion.div
+            animate={{ rotate: isHovered ? 10 : 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <step.icon className={`w-8 h-8 text-transparent bg-clip-text bg-gradient-to-r ${step.color}`} />
+          </motion.div>
+          {step.title}
+        </motion.h3>
+        
+        <motion.p 
+          className="text-gray-300 mb-6 text-lg leading-relaxed"
+          whileHover={{ y: -1 }}
+        >
+          {step.description}
+        </motion.p>
+        
+        <motion.div 
+          className={`space-y-2 ${index % 2 === 0 ? 'md:text-right' : ''}`}
+          whileHover={{ y: -0.5 }}
+        >
+          {step.features.map((feature: string, i: number) => (
+            <div key={i} className="flex items-center gap-2 text-gray-300">
+              <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+              <span className="text-sm">{feature}</span>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Número del paso */}
+      <div className="flex-shrink-0 relative">
+        <motion.div 
+          className={`w-20 h-20 rounded-2xl border-2 ${step.borderColor} ${step.bgColor} backdrop-blur-sm flex items-center justify-center relative z-10 group-hover:shadow-2xl transition-all duration-300`}
+          whileHover={{ scale: 1.1 }}
+        >
+          <motion.span 
+            className={`text-2xl font-bold bg-gradient-to-r ${step.color} bg-clip-text text-transparent`}
+            animate={{ scale: isHovered ? 1.2 : 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {step.number}
+          </motion.span>
+        </motion.div>
+        
+        {/* Flecha conectadora (solo en móvil) */}
+        {index < 3 && (
+          <div className="md:hidden absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+            <ArrowRight className="w-6 h-6 text-gray-500 rotate-90" />
+          </div>
+        )}
+      </div>
+
+      {/* Espacio para alineación */}
+      <div className="flex-1 md:block hidden" />
+    </motion.div>
+  )
+}
+
 export default function ProcessSection() {
   const ref = useRef(null)
   const [isInView, setIsInView] = useState(false)
@@ -83,6 +183,17 @@ export default function ProcessSection() {
     { icon: CheckCircle, value: '4.9/5', label: 'Rating clientes' }
   ]
 
+  // Función para scroll suave
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contacto')
+    if (contactSection) {
+      contactSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
   return (
     <section id="proceso" className="py-20 bg-gradient-to-br from-dark to-slate-900 relative overflow-hidden">
       {/* Elementos de fondo */}
@@ -129,73 +240,16 @@ export default function ProcessSection() {
           ))}
         </motion.div>
 
-        {/* Pasos del proceso */}
-        <div className="relative">
-          {/* Línea conectadora */}
-          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-green-500 transform -translate-x-1/2 hidden md:block" />
-          
-          <div className="space-y-12">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                transition={{ delay: 0.3 + index * 0.2 }}
-                className={`flex flex-col md:flex-row items-center gap-8 ${
-                  index % 2 === 0 ? 'md:flex-row-reverse' : ''
-                }`}
-              >
-                {/* Contenido */}
-                <div className={`flex-1 ${index % 2 === 0 ? 'md:text-right' : ''}`}>
-                  <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
-                    <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${step.color}`} />
-                    <span className="text-sm text-gray-300">Paso {step.number}</span>
-                    <div className="flex items-center gap-1 text-xs text-gray-400">
-                      <Clock className="w-3 h-3" />
-                      {step.duration}
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center gap-3">
-                    <step.icon className={`w-8 h-8 text-transparent bg-clip-text bg-gradient-to-r ${step.color}`} />
-                    {step.title}
-                  </h3>
-                  
-                  <p className="text-gray-300 mb-6 text-lg leading-relaxed">
-                    {step.description}
-                  </p>
-                  
-                  <div className={`space-y-2 ${index % 2 === 0 ? 'md:text-right' : ''}`}>
-                    {step.features.map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2 text-gray-300">
-                        <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Número del paso */}
-                <div className="flex-shrink-0 relative">
-                  <div className={`w-20 h-20 rounded-2xl border-2 ${step.borderColor} ${step.bgColor} backdrop-blur-sm flex items-center justify-center relative z-10`}>
-                    <span className={`text-2xl font-bold bg-gradient-to-r ${step.color} bg-clip-text text-transparent`}>
-                      {step.number}
-                    </span>
-                  </div>
-                  
-                  {/* Flecha conectadora (solo en móvil) */}
-                  {index < steps.length - 1 && (
-                    <div className="md:hidden absolute -bottom-12 left-1/2 transform -translate-x-1/2">
-                      <ArrowRight className="w-6 h-6 text-gray-500 rotate-90" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Espacio para alineación */}
-                <div className="flex-1 md:block hidden" />
-              </motion.div>
-            ))}
-          </div>
+        {/* Timeline de pasos */}
+        <div className="space-y-20 md:space-y-32">
+          {steps.map((step, index) => (
+            <AnimatedProcessStep 
+              key={step.number}
+              step={step}
+              index={index}
+              isInView={isInView}
+            />
+          ))}
         </div>
 
         {/* CTA Final */}
@@ -213,7 +267,10 @@ export default function ProcessSection() {
               Comienza con una auditoría gratuita y descubre exactamente cómo podemos mejorar tu presencia digital.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-gradient-to-r from-accent to-yellow-500 hover:from-yellow-400 hover:to-accent text-dark font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg">
+              <button 
+                onClick={scrollToContact}
+                className="bg-gradient-to-r from-accent to-yellow-500 hover:from-yellow-400 hover:to-accent text-dark font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
+              >
                 Comenzar Auditoría Gratuita
               </button>
               <button className="border-2 border-white/30 hover:border-white/60 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 backdrop-blur-sm">

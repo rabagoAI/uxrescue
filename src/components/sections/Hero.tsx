@@ -1,17 +1,82 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useSpring, animated, config } from '@react-spring/web'
 import { ArrowRight, Star, Zap, Shield } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export default function Hero() {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Animación del título principal
+  const titleAnimation = useSpring({
+    from: { opacity: 0, y: 80 },
+    to: { opacity: 1, y: 0 },
+    delay: 200,
+    config: config.molasses
+  })
+
+  // Animación del subtítulo
+  const subtitleAnimation = useSpring({
+    from: { opacity: 0, y: 40 },
+    to: { opacity: 1, y: 0 },
+    delay: 400,
+    config: config.slow
+  })
+
+  // Animación del badge superior
+  const badgeAnimation = useSpring({
+    from: { opacity: 0, scale: 0.8 },
+    to: { opacity: 1, scale: 1 },
+    delay: 100,
+    config: config.wobbly
+  })
+
+  // Animación de las métricas
+  const metricsAnimation = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    delay: 600,
+    config: config.slow
+  })
+
+  // Animación de los botones
+  const buttonsAnimation = useSpring({
+    from: { opacity: 0, y: 30 },
+    to: { opacity: 1, y: 0 },
+    delay: 800,
+    config: config.gentle
+  })
+
+  // Animación del texto final
+  const finalTextAnimation = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    delay: 1000,
+    config: config.slow
+  })
+
+  // Animación del scroll indicator (solo en cliente)
+  const scrollAnimation = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    delay: 1500,
+    config: config.slow
+  })
+
   // Función para scroll suave a una sección
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      })
+    if (typeof window !== 'undefined') {
+      const element = document.getElementById(sectionId)
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }
     }
   }
 
@@ -29,43 +94,43 @@ export default function Hero() {
       
       <div className="text-center text-white max-w-6xl mx-auto relative z-10">
         {/* Badge superior */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <animated.div
+          style={badgeAnimation}
           className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-8"
         >
           <Zap className="w-4 h-4 text-accent" />
           <span className="text-sm font-medium">Transformamos webs obsoletas en 72h</span>
-        </motion.div>
+        </animated.div>
 
         {/* Título principal */}
-        <motion.h1 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+        <animated.h1 
+          style={titleAnimation}
           className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
         >
           ¿Tu web
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-accent to-secondary mt-2">
+          <animated.span 
+            style={{
+              opacity: titleAnimation.opacity,
+              transform: titleAnimation.y.to(y => `translateY(${y}px)`)
+            }}
+            className="block text-transparent bg-clip-text bg-gradient-to-r from-accent to-secondary mt-2"
+          >
             ahuyenta clientes?
-          </span>
-        </motion.h1>
+          </animated.span>
+        </animated.h1>
         
         {/* Subtítulo */}
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <animated.p 
+          style={subtitleAnimation}
           className="text-xl md:text-2xl mb-8 text-light/80 max-w-3xl mx-auto leading-relaxed"
         >
           Te <span className="text-secondary font-semibold">rescatamos</span>. Convertimos sitios web obsoletos en 
           <span className="text-accent"> experiencias digitales que convierten visitantes en clientes</span>.
-        </motion.p>
+        </animated.p>
 
         {/* Métricas */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        <animated.div
+          style={metricsAnimation}
           className="flex flex-wrap justify-center gap-8 mb-8 text-light/70"
         >
           <div className="flex items-center gap-2">
@@ -84,13 +149,11 @@ export default function Hero() {
             <Zap className="w-4 h-4 text-yellow-400" />
             <span className="text-sm">72h promedio de entrega</span>
           </div>
-        </motion.div>
+        </animated.div>
 
-        {/* Botones de acción - AHORA CON FUNCIONALIDAD */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+        {/* Botones de acción */}
+        <animated.div
+          style={buttonsAnimation}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
           <button 
@@ -109,34 +172,33 @@ export default function Hero() {
               Ver Casos de Éxito
             </span>
           </button>
-        </motion.div>
+        </animated.div>
 
         {/* Llamada adicional */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+        <animated.p
+          style={finalTextAnimation}
           className="text-light/60 mt-8 text-sm"
         >
           Análisis completo de tu web actual + propuesta de mejora en 24h
-        </motion.p>
+        </animated.p>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-1 h-3 bg-white/60 rounded-full mt-2"
-          />
-        </div>
-      </motion.div>
+      {/* Scroll indicator - Solo se renderiza en cliente */}
+      {isMounted && (
+        <animated.div
+          style={scrollAnimation}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+            <animated.div
+              style={{
+                transform: scrollAnimation.opacity.to(o => `translateY(${o * 8}px)`)
+              }}
+              className="w-1 h-3 bg-white/60 rounded-full mt-2"
+            />
+          </div>
+        </animated.div>
+      )}
     </section>
   )
 }

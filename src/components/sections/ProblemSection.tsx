@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import { Smartphone, Zap, Users, TrendingDown, X, CheckCircle2 } from 'lucide-react'
+import { useSpring, animated, config } from '@react-spring/web'
 
 // Define los tipos para la comparación antes/después
 type BeforeSection = {
@@ -22,6 +23,100 @@ type Section = BeforeSection | AfterSection
 // Función de guardia de tipo
 function isBeforeSection(section: Section): section is BeforeSection {
   return 'problems' in section
+}
+
+// Componente de tarjeta animada
+function AnimatedProblemCard({ problem, index, isInView }: { problem: any, index: number, isInView: boolean }) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  const cardAnimation = useSpring({
+    from: { opacity: 0, y: 30, scale: 0.9 },
+    to: { opacity: isInView ? 1 : 0, y: isInView ? 0 : 30, scale: isInView ? 1 : 0.9 },
+    delay: index * 100,
+    config: config.gentle
+  })
+
+  const hoverAnimation = useSpring({
+    scale: isHovered ? 1.05 : 1,
+    y: isHovered ? -8 : 0,
+    rotateX: isHovered ? 5 : 0,
+    config: config.wobbly
+  })
+
+  const iconAnimation = useSpring({
+    scale: isHovered ? 1.2 : 1,
+    rotate: isHovered ? 10 : 0,
+    config: config.wobbly
+  })
+
+  const glowAnimation = useSpring({
+    opacity: isHovered ? 0.3 : 0,
+    scale: isHovered ? 1.1 : 1,
+    config: config.molasses
+  })
+
+  return (
+    <animated.div
+      style={{ ...cardAnimation, ...hoverAnimation }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`relative bg-gradient-to-br ${problem.gradient} backdrop-blur-sm border ${problem.border} rounded-2xl p-6 shadow-xl overflow-hidden cursor-pointer`}
+    >
+      {/* Efecto de glow al hacer hover */}
+      <animated.div
+        style={glowAnimation}
+        className={`absolute inset-0 bg-gradient-to-br ${problem.gradient.replace('/10', '/30')} rounded-2xl`}
+      />
+      
+      {/* Contenido de la tarjeta */}
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-4">
+          <animated.div 
+            style={iconAnimation}
+            className="p-3 bg-white/10 rounded-xl shadow-lg"
+          >
+            <problem.icon className="w-6 h-6 text-white" />
+          </animated.div>
+          <animated.span 
+            style={{
+              scale: isHovered ? 1.1 : 1,
+            }}
+            className="text-2xl font-bold text-white transition-transform"
+          >
+            {problem.stat}
+          </animated.span>
+        </div>
+
+        <animated.h3 
+          style={{
+            transform: hoverAnimation.y.to(y => `translateY(${y * 0.3}px)`)
+          }}
+          className="text-xl font-semibold text-white mb-3"
+        >
+          {problem.title}
+        </animated.h3>
+        
+        <animated.p 
+          style={{
+            transform: hoverAnimation.y.to(y => `translateY(${y * 0.2}px)`)
+          }}
+          className="text-gray-300 mb-4 text-sm leading-relaxed"
+        >
+          {problem.description}
+        </animated.p>
+        
+        <animated.div 
+          style={{
+            transform: hoverAnimation.y.to(y => `translateY(${y * 0.1}px)`)
+          }}
+          className="flex items-center gap-2 text-red-300 text-sm font-medium bg-white/5 rounded-lg px-3 py-2"
+        >
+          <X className="w-4 h-4" />
+          {problem.consequence}
+        </animated.div>
+      </div>
+    </animated.div>
+  )
 }
 
 export default function ProblemSection() {
@@ -140,34 +235,19 @@ export default function ProblemSection() {
           </p>
         </motion.div>
 
-        {/* Grid de problemas - NUEVOS COLORES */}
+        {/* Grid de problemas - CON NUEVOS EFECTOS HOVER */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {problems.map((problem, index) => (
-            <motion.div
+            <AnimatedProblemCard 
               key={problem.title}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ delay: index * 0.1 }}
-              className={`bg-gradient-to-br ${problem.gradient} backdrop-blur-sm border ${problem.border} rounded-2xl p-6 hover:scale-105 transition-all duration-300 group shadow-xl hover:shadow-2xl`}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-white/10 rounded-xl group-hover:scale-110 transition-transform shadow-lg">
-                  <problem.icon className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-2xl font-bold text-white">{problem.stat}</span>
-              </div>
-
-              <h3 className="text-xl font-semibold text-white mb-3">{problem.title}</h3>
-              <p className="text-gray-300 mb-4 text-sm leading-relaxed">{problem.description}</p>
-              <div className="flex items-center gap-2 text-red-300 text-sm font-medium bg-white/5 rounded-lg px-3 py-2">
-                <X className="w-4 h-4" />
-                {problem.consequence}
-              </div>
-            </motion.div>
+              problem={problem}
+              index={index}
+              isInView={isInView}
+            />
           ))}
         </div>
 
-        {/* Comparación Antes/Después - CORREGIDO */}
+        {/* Comparación Antes/Después */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
